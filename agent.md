@@ -14,7 +14,7 @@
     - [RL & OPD](#rl--opd)
     - [Sampling strategies](#sampling-strategies)
     - [Stability and others](#stability-and-others)
-  - [Agentic modeling](#agentic-modeling)
+  - [New model architectures](#new-model-architectures)
 
 ## QWEN models
 
@@ -578,9 +578,9 @@ that modifies task-specific prompting, retrieval, memory, and orchestration logi
 ## New model architectures
 
 - Attention Residuals [[Arxiv'26/03](https://arxiv.org/abs/2603.15031)]
-  - Problem: standard residual connections ($\mathbf{h}_l = \mathbf{h}_{l-1} + F(\mathbf{h}_{l-1})$) accumulate all layer outputs with fixed unit weights, causing uncontrolled hidden-state growth and progressive dilution of each layer's contribution
+  - Problem: standard residual connections ($`\mathbf{h}_l = \mathbf{h}_{l-1} + F(\mathbf{h}_{l-1})`$) accumulate all layer outputs with fixed unit weights, causing uncontrolled hidden-state growth and progressive dilution of each layer's contribution
   - **AttnRes**: replace fixed accumulation with softmax attention over all preceding layer outputs
-    - $\mathbf{h}_l = \sum_{i=0}^{l-1} \alpha_{i \to l} \cdot \mathbf{v}_i$, where $\alpha_{i \to l} = \frac{\exp(\mathbf{w}_l^\top \text{RMSNorm}(\mathbf{k}_i))}{\sum_{j=0}^{l-1} \exp(\mathbf{w}_l^\top \text{RMSNorm}(\mathbf{k}_j))}$
+    - $`\mathbf{h}_l = \sum_{i=0}^{l-1} \alpha_{i \to l} \cdot \mathbf{v}_i`$, where $`\alpha_{i \to l} = \frac{\exp(\mathbf{w}_l^\top \text{RMSNorm}(\mathbf{k}_i))}{\sum_{j=0}^{l-1} \exp(\mathbf{w}_l^\top \text{RMSNorm}(\mathbf{k}_j))}`$
     - $\mathbf{w}_l \in \mathbb{R}^d$: learned pseudo-query per layer; $\mathbf{k}_i$: keys from prior layer outputs; $\mathbf{v}_i$: prior layer representations
     - Each layer selectively aggregates earlier representations with learned, input-dependent weights
   - **Block AttnRes**: partition layers into $N$ blocks; apply attention only over block-level representations instead of all layers, reducing memory from $O(Ld)$ to $O(Nd)$
